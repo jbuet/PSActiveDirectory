@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Get-InactiveComputer - Search for inactive computers on your domain
+        Get-InactiveComputer - Search for inactive in an Active Directory Domain
             
     .DESCRIPTION
         Perform a search on a domain to retrieve inactive computers for a number of days. 
@@ -47,8 +47,8 @@
     
 
     .NOTES
-        Requiere el modulo ActiveDirectory
-
+        Requirements: 
+            ActiveDirectory Module
 #>
 
 
@@ -59,7 +59,8 @@ param (
     [Alias('Server')]
     [String]
     $DomainController,
-
+    
+    [pscredential]
     $Credential ,
 
     [String]
@@ -90,9 +91,9 @@ process {
     
     switch ($PSBoundParameters.keys) {
         
-        'ComputerName' {
-            if ($computerName -ne $env:COMPUTERNAME -and $ComputerName -ne 'localhost') {
-                $Arguments.Server = $ComputerName
+        'DomainController' {
+            if ($DomainController -ne $env:COMPUTERNAME -and $DomainController -ne 'localhost') {
+                $Arguments.Server = $DomainController
             }
         }
         
@@ -114,9 +115,15 @@ process {
         
         # Create Array
         $OldMachine = New-Object System.Collections.Generic.List[System.Object]
+
+        $i = 0
+        Write-Verbose "[PROCESS] Processing computers"
         
         foreach ($computer in $LastLogon) {
-            
+            $i ++
+            $Percent = [Math]::Round(($i / $LastLogon.count * 100))
+            Write-Progress -Activity "Processing Computers" -Status "Progress --> $Percent%" -PercentComplete  $Percent
+
             $Properties = @{
                 Name               = $computer.Name
                 Enabled            = $Computer.Enabled
@@ -150,6 +157,9 @@ process {
             else {
                 Write-Output $OldMachine
             }
+        } 
+        else { 
+            Write-Warning "Not found any inactive computer"
         } # oldmachine if
            
     } # try 
