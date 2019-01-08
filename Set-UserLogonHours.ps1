@@ -22,7 +22,11 @@
     .EXAMPLE
     Import-Csv -Path c:\users.csv | Set-UserLogonHours -Verbose -Status Denied
     Deny authentication to users imported on the CSV file "C:\users.csv"
+   
+    .LINK
+        https://github.com/jbuet/PSActiveDirectory
     
+   
     .NOTES
     Requiriments:
         * ActiveDirectory Module
