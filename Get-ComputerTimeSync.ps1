@@ -24,8 +24,9 @@
     
     .NOTES
     Requiriments:
-        * Target computers need to have enable PSRemoting with the following command: winrm /qc
+        * Target computers need to have enabled PSRemoting with the following command: winrm /qc
         * Local admin permission on target computers
+        * At least Powershell 4.0
 #>
 
 

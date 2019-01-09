@@ -22,6 +22,10 @@
         
     .NOTES
         https://github.com/jbuet/PSActiveDirectory
+        Requirements:
+            * At least Powershell 4.0
+            * Target computers need to have enabled PSRemoting with the following command: winrm /qc
+
 
 #>
 [CmdletBinding()]
