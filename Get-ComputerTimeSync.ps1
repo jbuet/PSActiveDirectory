@@ -57,7 +57,7 @@ process {
     foreach ($Computer in $ComputerName) {
         $i ++
         $Percent = [Math]::Round(($i / $ComputerName.count * 100))
-        Write-Progress -Activity "Processing computer: $Computer"  -PercentComplete  $Percent
+        Write-Progress -Activity "Processing computer: $Computer" -Status "Progress --> $Percent%"  -PercentComplete  $Percent
         
         Write-Verbose "[PROCESS] Retrieving information from $Computer"
         IF (Test-NetConnection -ComputerName $Computer -InformationLevel Quiet -WarningAction  SilentlyContinue ) {
@@ -83,12 +83,20 @@ process {
                 $Configuration = Invoke-Command @Parameters
                 
                 $Procotol = ($Configuration | findstr.exe "Type:") -replace "^Type: (.*)$", '$1'
+                
                 $Property = @{
                     ComputerName = $Computer;
                     Source       = $Source;
                     Status       = "ON"
                     Protocol     = $Procotol
                 }
+
+                if ($Source | findstr.exe "0x80070426" ) {
+                    $Property.Status = "Time service not Running"
+                    $Property.Source = $Null
+                    $Property.Protocol = $Null
+                }
+                                                            
             }
             catch {
                 Write-Warning "Access denied at $Computer. Check winrm /qc"
@@ -99,7 +107,6 @@ process {
                     Status       = "Access Denied"
                     Procotol     = $Null
                 }
-                    
             } # try catch
         }
         else {
